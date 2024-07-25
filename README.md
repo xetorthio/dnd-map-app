@@ -77,7 +77,7 @@ We welcome contributions from the community! To get started:
 
 ## TODO List
 
-1. **Open source it:** Finalize licensing and documentation for open-source release.
+1. ~**Open source it:** Finalize licensing and documentation for open-source release.~
 2. **Add save and load option:** Enable saving and loading of maps and states.
 3. **Add different types of area effects:** Implement effects like circles, cones, etc.
 4. **Add animations to effects:** Include animations for effects like fire and thunder.
