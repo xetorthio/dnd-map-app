@@ -75,11 +75,11 @@ const Player = () => {
 
     return (
         <Fragment>
-            <AppBar position="static" color="primary" sx={{ display: 'flex', gap: 2 }}>
+            {readyState !== ReadyState.OPEN ? <AppBar position="static" color="primary" sx={{ display: 'flex', gap: 2 }}>
                 <Box position="static" sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                     <ConnectionStatus connectionStatus={readyState} />
                 </Box>
-            </AppBar>
+            </AppBar> : null }
             <Stage
                 style={{ backgroundColor: "black" }}
                 draggable={false}
