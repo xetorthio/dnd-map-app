@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useRef } from "react";
 import { Rect, Transformer } from "react-konva";
 
-const Effect = ({isSelected, isNew, onSelect, x, y, height, width, rotation, draggable, color, onChange}) => {
+const Effect = ({listening, isSelected, isNew, onSelect, x, y, height, width, rotation, draggable, color, onChange}) => {
     const trRef = useRef();
     const effectRef = useRef();
 
@@ -42,7 +42,7 @@ const Effect = ({isSelected, isNew, onSelect, x, y, height, width, rotation, dra
                 onMouseOut={() => {document.body.style.cursor = 'default'}}
                 onClick={onSelect}
                 onDragStart={onSelect}
-                listening={draggable}
+                listening={listening}
                 onDragEnd={(e) => {
                     onChange({
                         width: width,
@@ -69,6 +69,7 @@ const Effect = ({isSelected, isNew, onSelect, x, y, height, width, rotation, dra
                 }}
             />
             {isSelected && <Transformer
+                listening={listening}
                 ref={trRef}
             />}
         </Fragment>

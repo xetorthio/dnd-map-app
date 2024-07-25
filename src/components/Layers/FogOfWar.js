@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { Layer, Rect } from "react-konva";
 import { useState } from "react";
 import FogOfWarReveal from "./FogOfWarReveal";
@@ -20,10 +20,11 @@ const FogOfWar = ({opacity, height, width, revealEnabled, reveals, onRevealsChan
     };
 
     useEffect(() => {
-        fog.current.getStage().container().addEventListener('keypress', handleDeleteSelectedReveal);
-        return () => {
-            if (fog.current) {
-                fog.current.getStage().container().removeEventListener('keypress', handleDeleteSelectedReveal);
+        if (fog.current) {
+            const currentFog = fog.current;
+            currentFog.getStage().container().addEventListener('keypress', handleDeleteSelectedReveal);
+            return () => {
+                currentFog.getStage().container().removeEventListener('keypress', handleDeleteSelectedReveal);
             }
         }
     }, [selectedReveal]);
@@ -41,7 +42,7 @@ const FogOfWar = ({opacity, height, width, revealEnabled, reveals, onRevealsChan
         if (newReveal.length === 0) {
             const { x, y } = e.target.getLayer().getRelativePointerPosition();
             setSelectedReveal(reveals.length+1);
-            setNewReveal([{ x, y, width: 0, height: 0, isNew: true }]);
+            setNewReveal([{ originalX: x, originalY: y, x, y, width: 0, height: 0, isNew: true }]);
         }
     };
 
@@ -51,14 +52,10 @@ const FogOfWar = ({opacity, height, width, revealEnabled, reveals, onRevealsChan
         }
         if (newReveal.length === 1) {
             if (newReveal[0].width > 0 && newReveal[0].height > 0) {
-                const sx = newReveal[0].x;
-                const sy = newReveal[0].y;
-                const { x, y } = e.target.getLayer().getRelativePointerPosition();
+                const newProps = getNewProps(newReveal[0], e.target.getLayer().getRelativePointerPosition());
+
                 const revealToAdd = {
-                    x: sx,
-                    y: sy,
-                    width: x - sx,
-                    height: y - sy,
+                    ...newProps,
                     isNew: false
                 };
 
@@ -69,26 +66,29 @@ const FogOfWar = ({opacity, height, width, revealEnabled, reveals, onRevealsChan
         }
     };
     
+    const getNewProps = ({originalX, originalY}, {x, y}) => {
+        const newX = Math.min(originalX, x);
+        const newY = Math.min(originalY, y);
+      
+        const width = Math.max(originalX, x) - newX;
+        const height = Math.max(originalY, y) - newY;
+
+        return {x: newX, y: newY, width, height, originalX, originalY};
+    };
+
     const handleMouseMove = e => {
         if (!revealEnabled) {
             return;
         }
         if (newReveal.length === 1) {
-          const sx = newReveal[0].x;
-          const sy = newReveal[0].y;
-          const { x, y } = e.target.getLayer().getRelativePointerPosition();
-          const nwidth = x - sx <= 0 ? 10 : x - sx;
-          const nheight = y - sy <= 0 ? 10 : y - sy;
+            const newProps = getNewProps(newReveal[0], e.target.getLayer().getRelativePointerPosition());
 
-          setNewReveal([
-            {
-              x: sx,
-              y: sy,
-              width: nwidth,
-              height: nheight,
-              isNew: true
-            }
-          ]);
+            setNewReveal([
+                {
+                    ...newProps,
+                    isNew: true
+                }
+            ]);
         }
     };
 
@@ -112,6 +112,8 @@ const FogOfWar = ({opacity, height, width, revealEnabled, reveals, onRevealsChan
     return (
         <Layer 
             onMouseDown={checkDeselect}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
             >
             <Rect
                 ref={fog}
@@ -121,8 +123,6 @@ const FogOfWar = ({opacity, height, width, revealEnabled, reveals, onRevealsChan
                 height={height}
                 fill={'rgba(0,0,0, ' + opacity + ')'}
                 onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
-                onMouseMove={handleMouseMove}
                 listening={revealEnabled}
                 />
             {revealsToDraw.map((reveal, i) => (
@@ -136,6 +136,7 @@ const FogOfWar = ({opacity, height, width, revealEnabled, reveals, onRevealsChan
                     key={i}
                     isNew={reveal.isNew}
                     isSelected={selectedReveal === i}
+                    listening={revealEnabled && !reveal.isNew}
                     onChange={(attrs) => {
                         const newreveals = [...reveals];
                         newreveals[i] = {...reveals[i], ...attrs};

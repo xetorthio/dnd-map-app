@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useRef } from "react";
 import { Rect, Transformer } from "react-konva";
 
-const FogOfWarReveal = ({isSelected, isNew, onSelect, x, y, height, width, draggable, onChange}) => {
+const FogOfWarReveal = ({listening, isSelected, isNew, onSelect, x, y, height, width, draggable, onChange}) => {
     const trRef = useRef();
     const revealRef = useRef();
 
@@ -37,8 +37,6 @@ const FogOfWarReveal = ({isSelected, isNew, onSelect, x, y, height, width, dragg
                 height={height}
                 fill={'rgba(255,255,255,1)'}
                 draggable={draggable}
-                onMouseOver={() => {document.body.style.cursor = 'move'}}
-                onMouseOut={() => {document.body.style.cursor = 'default'}}
                 globalCompositeOperation="destination-out"
                 onClick={onSelect}
                 onDragStart={onSelect}
@@ -50,6 +48,7 @@ const FogOfWarReveal = ({isSelected, isNew, onSelect, x, y, height, width, dragg
                         y: e.target.y(),
                     });
                 }}
+                listening={listening}
                 onTransformEnd={(e) => {
                     const node = revealRef.current;
                     const scaleX = node.scaleX();
@@ -69,6 +68,7 @@ const FogOfWarReveal = ({isSelected, isNew, onSelect, x, y, height, width, dragg
                 ref={trRef}
                 flipEnabled={false}
                 rotateEnabled={false}
+                listening={listening}
             />}
         </Fragment>
     );

@@ -8,10 +8,11 @@ const Effects = ({enabled, width, height, color, effects, onChange}) => {
     const [newEffect, setNewEffect] = useState([]);
 
     useEffect(() => {
-        effectsRef.current.getStage().container().addEventListener('keypress', handleDeleteSelectedEffect);
-        return () => {
-            if (effectsRef.current) {
-                effectsRef.current.getStage().container().removeEventListener('keypress', handleDeleteSelectedEffect);
+        if (effectsRef.current) {
+            const currentEffect = effectsRef.current;
+            currentEffect.getStage().container().addEventListener('keypress', handleDeleteSelectedEffect);
+            return () => {
+                currentEffect.getStage().container().removeEventListener('keypress', handleDeleteSelectedEffect);
             }
         }
     }, [selectedEffect]);
@@ -59,8 +60,18 @@ const Effects = ({enabled, width, height, color, effects, onChange}) => {
         if (newEffect.length === 0) {
             const { x, y } = e.target.getLayer().getRelativePointerPosition();
             setSelectedEffect(effects.length+1);
-            setNewEffect([{ x, y, width: 0, height: 0, isNew: true, color: color, rotation: 0 }]);
+            setNewEffect([{ originalX: x, originalY: y, x, y, width: 0, height: 0, isNew: true, color: color, rotation: 0 }]);
         }
+    };
+
+    const getNewProps = ({originalX, originalY}, {x, y}) => {
+        const newX = Math.min(originalX, x);
+        const newY = Math.min(originalY, y);
+      
+        const width = Math.max(originalX, x) - newX;
+        const height = Math.max(originalY, y) - newY;
+
+        return {x: newX, y: newY, width, height, originalX, originalY};
     };
 
     const handleMouseUp = e => {
@@ -69,14 +80,10 @@ const Effects = ({enabled, width, height, color, effects, onChange}) => {
         }
         if (newEffect.length === 1) {
             if (newEffect[0].width > 0 && newEffect[0].height > 0) {
-                const sx = newEffect[0].x;
-                const sy = newEffect[0].y;
-                const { x, y } = e.target.getLayer().getRelativePointerPosition();
+                const newProps = getNewProps(newEffect[0], e.target.getLayer().getRelativePointerPosition());
+                
                 const effectToAdd = {
-                    x: sx,
-                    y: sy,
-                    width: x - sx,
-                    height: y - sy,
+                    ...newProps,
                     isNew: false,
                     color: color,
                     rotation: 0
@@ -93,23 +100,16 @@ const Effects = ({enabled, width, height, color, effects, onChange}) => {
             return;
         }
         if (newEffect.length === 1) {
-          const sx = newEffect[0].x;
-          const sy = newEffect[0].y;
-          const { x, y } = e.target.getLayer().getRelativePointerPosition();
-          const nwidth = x - sx <= 0 ? 10 : x - sx;
-          const nheight = y - sy <= 0 ? 10 : y - sy;
+            const newProps = getNewProps(newEffect[0], e.target.getLayer().getRelativePointerPosition());
 
-          setNewEffect([
-            {
-              x: sx,
-              y: sy,
-              width: nwidth,
-              height: nheight,
-              isNew: true,
-              rotation: 0,
-              color: color
-            }
-          ]);
+            setNewEffect([
+                {
+                    ...newProps,
+                    isNew: true,
+                    rotation: 0,
+                    color: color
+                }
+            ]);
         }
     };
 
@@ -126,6 +126,8 @@ const Effects = ({enabled, width, height, color, effects, onChange}) => {
     return (
         <Layer
             onMouseDown={checkDeselect}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
         >
             <Rect
                 ref={effectsRef}
@@ -135,8 +137,6 @@ const Effects = ({enabled, width, height, color, effects, onChange}) => {
                 height={height}
                 fill={'rgba(0,0,0, 0)'}
                 onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
-                onMouseMove={handleMouseMove}
                 listening={enabled}
                 />
             {effectsToDraw.map((effect, i) => (
@@ -152,6 +152,7 @@ const Effects = ({enabled, width, height, color, effects, onChange}) => {
                     isNew={effect.isNew}
                     isSelected={selectedEffect === i}
                     color={effect.color}
+                    listening={enabled && !effect.isNew}
                     onChange={(attrs) => {
                         const neweffects = [...effects];
                         neweffects[i] = {...effects[i], ...attrs};
