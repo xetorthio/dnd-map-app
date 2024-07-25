@@ -82,7 +82,7 @@ We welcome contributions from the community! To get started:
 3. **Add different types of area effects:** Implement effects like circles, cones, etc.
 4. **Add animations to effects:** Include animations for effects like fire and thunder.
 5. **Add library of images:** Allow images to be placed contextually on the map.
-6. **Hide player top bar by default:** Only show it when there is a connection problem.
+6. ~**Hide player top bar by default:** Only show it when there is a connection problem.~
 7. **Add DM map:** Provide a separate map for the DM with additional information.
 8. **Enable effects and reveals in any direction:** Currently, they can only be done towards the bottom right.
 9. **Fix z-index issues:** Address layering problems with reveals and effects.
