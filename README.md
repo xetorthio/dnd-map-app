@@ -77,18 +77,18 @@ We welcome contributions from the community! To get started:
 
 ## TODO List
 
-1. ~**Open source it:** Finalize licensing and documentation for open-source release.~
-2. ~**Add save and load option:** Enable saving and loading of maps and states.~
-3. **Add different types of area effects:** Implement effects like circles, cones, etc.
-4. **Add animations to effects:** Include animations for effects like fire and thunder.
-5. **Add library of images:** Allow images to be placed contextually on the map.
-6. ~**Hide player top bar by default:** Only show it when there is a connection problem.~
-7. **Add DM map:** Provide a separate map for the DM with additional information.
-8. ~**Enable effects and reveals in any direction:** Currently, they can only be done towards the bottom right.~
-9. ~**Fix z-index issues:** Address layering problems with reveals and effects.~
-10. **Reposition player view:** Center the view on the cursor for easier interaction.
-11. **Configure ports and server URL:** Allow customization of connection settings.
-12. **Allow to resize player view by drawing a square:** We should be able to measure screen PPI and how many pixels are in a square in the image and resize it to be exactly 1 inch.
+- [ ] **Add different types of area effects:** Implement effects like circles, cones, etc.
+- [ ] **Add animations to effects:** Include animations for effects like fire and thunder.
+- [ ] **Add library of images:** Allow images to be placed contextually on the map.
+- [ ] **Add DM map:** Provide a separate map for the DM with additional information.
+- [ ] **Reposition player view:** Center the view on the cursor for easier interaction.
+- [ ] **Configure ports and server URL:** Allow customization of connection settings.
+- [ ] **Allow to resize player view by drawing a square:** We should be able to measure screen PPI and how many pixels are in a square in the image and resize it to be exactly 1 inch.
+- [x] ~**Open source it:** Finalize licensing and documentation for open-source release.~
+- [x] ~**Add save and load option:** Enable saving and loading of maps and states.~
+- [x] ~**Hide player top bar by default:** Only show it when there is a connection problem.~
+- [x] ~**Enable effects and reveals in any direction:** Currently, they can only be done towards the bottom right.~
+- [x] ~**Fix z-index issues:** Address layering problems with reveals and effects.~
 
 ## License
 
