@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 import MapSelector from './MapSelector';
-import { AppBar, Box, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { AppBar, Box, ToggleButtonGroup, ToggleButton, Button } from '@mui/material';
 import ControlCameraIcon from '@mui/icons-material/ControlCamera';
 import StreetviewIcon from '@mui/icons-material/Streetview';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FlareIcon from '@mui/icons-material/Flare';
-import SyncIcon from '@mui/icons-material/Sync';
 import EffectColorPicker from "./EffectColorPicker";
 import ConnectionStatus from "./ConnectionStatus";
+import SaveButton from "./SaveButton";
+import LoadButton from "./LoadButton";
 
 const DMToolbox = ({
     handleMapChange,
@@ -19,6 +20,8 @@ const DMToolbox = ({
     handlePlayerViewRescale,
     handleEffects,
     handleEffectColorChange,
+    getState,
+    handleLoad,
 
     mapMoveSelected,
     fogOfWarRevealSelected,
@@ -74,6 +77,8 @@ const DMToolbox = ({
                 <EffectColorPicker color={selectedEffectColor} onColorChange={handleEffectColorChange} />
                 <input id={'DMViewScale'} type="number" value={dmViewScale} min={0.1} max={5} step={0.1} onChange={dmViewScaleChangeHandler} />
                 <input id={'PlayerViewScale'} type="number" value={playerViewScale} min={0.1} max={5} step={0.1} onChange={playerViewScaleChangeHandler} />
+                <SaveButton getState={getState} filename="session" />
+                <LoadButton handleStateLoad={handleLoad} />
             </Box>
         </AppBar>
     );

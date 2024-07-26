@@ -17,11 +17,7 @@ const MapSelector = ({onMapChange}) => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                const img = new window.Image();
-                img.src = reader.result;
-                img.onload = () => {
-                    onMapChange(img);
-                };
+                onMapChange(reader.result);
             }
             reader.readAsDataURL(file);
         }

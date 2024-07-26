@@ -64,7 +64,11 @@ const DM = () => {
   };
 
   const handleMapChange = (map) => {
-    setSelectedMap(map);
+    const img = new window.Image();
+    img.src = map;
+    img.onload = () => {
+        setSelectedMap(img);
+    };
   };
 
   const handleDMViewRescale = (scale) => {
@@ -144,6 +148,36 @@ const DM = () => {
     }
   }, [lastMessage]);
 
+  const generateState = () => {
+    return {
+      map: {
+        src: selectedMap.src,
+        width: selectedMap.width,
+        height: selectedMap.height
+      },
+      fogOfWarReveals: fogOfWarReveals,
+      playerViewScale,
+      dmViewScale,
+      effects,
+    };
+  };
+
+  const handleFogOfWarRevealsChange = (reveals) => {
+    setFogOfWarReveals(reveals);
+  };
+
+  const handleEffectsChange = (effects) => {
+    setEffects(effects);
+  };
+
+  const handleLoad = (loadedState) => {
+    handleMapChange(loadedState.map.src);
+    handleFogOfWarRevealsChange(loadedState.fogOfWarReveals);
+    handleEffectsChange(loadedState.effects);
+    handleDMViewRescale(loadedState.dmViewScale);
+    handlePlayerViewRescale(loadedState.playerViewScale);
+  };
+
   return (
     <Fragment>
       <DMToolbox
@@ -155,6 +189,8 @@ const DM = () => {
         handlePlayerViewRescale={handlePlayerViewRescale}
         handleEffects={handleEffects}
         handleEffectColorChange={handleEffectColorChange}
+        getState={generateState}
+        handleLoad={handleLoad}
 
         mapMoveSelected={mapMoveSelected}
         fogOfWarRevealSelected={fogOfWarRevealSelected}
@@ -184,14 +220,14 @@ const DM = () => {
               height={selectedMapDimensions.height}
               width={selectedMapDimensions.width}
               reveals={fogOfWarReveals}
-              onRevealsChange={(reveals) => {setFogOfWarReveals(reveals);}} />
+              onRevealsChange={handleFogOfWarRevealsChange} />
             <Effects
               enabled={effectsSelected}
               height={selectedMapDimensions.height}
               width={selectedMapDimensions.width}
               color={selectedEffectColor}
               effects={effects}
-              onChange={(effects) => {setEffects(effects);}} />
+              onChange={handleEffectsChange} />
             {playerViewDimensions.width && <PlayersView 
               ref={playersViewRef}
               selected={playerViewSelected}
