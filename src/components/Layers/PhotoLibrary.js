@@ -24,6 +24,23 @@ const PhotoLibrary = ({onOpen, draggable, selected, listening, x, y, onSelect, o
         }
     }, [selected]);
 
+    useEffect(() => {
+        if (libraryRef.current) {
+            libraryRef.current.getStage().on('scaleXChange', () => {
+                if (libraryRef.current) {
+                    const inverseScale = 2 / libraryRef.current.getStage().scaleX();
+                    libraryRef.current.scaleX(inverseScale);
+                    libraryRef.current.scaleY(inverseScale);
+                }
+            });
+        }
+        if (libraryRef.current) {
+            const inverseScale = 2 / libraryRef.current.getStage().scaleX();
+            libraryRef.current.scaleX(inverseScale);
+            libraryRef.current.scaleY(inverseScale);
+        }
+    }, []);
+
     return (
         <Fragment>
             <Path
@@ -34,8 +51,6 @@ const PhotoLibrary = ({onOpen, draggable, selected, listening, x, y, onSelect, o
                 y={y}
                 data='M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2m-11-4 2.03 2.71L16 11l4 5H8zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6z'
                 fill={isOver ? 'white' : 'lightgray'}
-                scaleX={2}
-                scaleY={2}
                 onClick={onSelect}
                 onDragStart={onSelect}
                 listening={listening}
