@@ -25,6 +25,9 @@ const PhotoLibraries = ({onOpen, enabled, width, height, libraries, onChange}) =
             onChange(newlibraries);
             setSelected(null);
         }
+        if (e.key == 'Enter' && selected != null) {
+            onOpen(selected);
+        }
     };
 
     const addNewPhotoLibrary = (e) => {

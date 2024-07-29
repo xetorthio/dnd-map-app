@@ -59,8 +59,8 @@ const DMToolbox = ({
     };
 
     return (
-        <AppBar position="absolute" color="primary" sx={{ display: 'flex', gap: 2 }}>
-            <Box position="static" sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <AppBar position="fixed" color="primary" sx={{ display: 'flex', gap: 2 }}>
+            <Box position="fixed" sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <ConnectionStatus connectionStatus={connectionStatus} />
                 <ToggleButtonGroup orientation="horizontal" size="large" aria-label="Small sizes" sx={{ flexWrap: "wrap" }}>
                     <MapSelector onMapChange={handleMapChange} />

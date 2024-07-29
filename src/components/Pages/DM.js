@@ -1,5 +1,5 @@
 import { Stage } from 'react-konva';
-import { Fragment, useState, useEffect, useRef } from 'react';
+import { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import Map from '../Layers/Map';
 import FogOfWar from '../Layers/FogOfWar';
 import DMToolbox from '../Toolbox/DMToolbox';
@@ -39,6 +39,9 @@ const DM = () => {
   const [photoLibraries, setPhotoLibraries] = useState([]);
   const [photoLibraryDialogOpen, setPhotoLibraryDialogOpen] = useState(false);
   const [selectedPhotoLibrary, setSelectedPhotoLibrary] = useState(null);
+  const playerViewDimensionsRef = useRef();
+
+  playerViewDimensionsRef.current = playerViewDimensions;
 
   const sendStateMessage = (type, msg) => {
     sendMessage(JSON.stringify({type: type, msg: msg}));
@@ -163,7 +166,7 @@ const DM = () => {
     if (lastMessage) {
       const msg = JSON.parse(lastMessage.data);
       if (msg.type == 'playerViewChange') {
-        setPlayerViewDimensions({...playerViewDimensions, width: msg.msg.width / playerViewScale, height: msg.msg.height / playerViewScale});
+        setPlayerViewDimensions({x: playerViewDimensions.x, y: playerViewDimensions.y, width: msg.msg.width / playerViewScale, height: msg.msg.height / playerViewScale});
       } else if (msg.type == 'playerConnected') {
         sendPlayerEverything();
       }
@@ -231,6 +234,26 @@ const DM = () => {
     playerSendImageToShow(image);
   };
 
+  const handlePlayerScreenRepositioning = (e) => {
+    if (e.key === 'p') {
+      const {x, y} = stageRef.current.getRelativePointerPosition();
+
+      const movex = x - playerViewDimensionsRef.current.width / 2;
+      const movey = y - playerViewDimensionsRef.current.height / 2;
+      setPlayerViewDimensions({...playerViewDimensionsRef.current, x: movex, y: movey});
+    }
+  };
+
+  useEffect(() => {
+    if (stageRef.current) {
+      const currentStage = stageRef.current.container();
+      currentStage.addEventListener('keypress', handlePlayerScreenRepositioning);
+      return () => {
+        currentStage.removeEventListener('keypress', handlePlayerScreenRepositioning);
+      };
+    }
+  }, [stageRef.current]);
+
   return (
     <Fragment>
       <CssBaseline />
@@ -266,7 +289,7 @@ const DM = () => {
       />
       <main>
         <Stage
-          style={{ position: 'sticky', backgroundColor: "black" }}
+          style={{ position: 'fixed', backgroundColor: "black" }}
           width={window.innerWidth}
           height={window.innerHeight}
           tabIndex={0}
@@ -295,8 +318,8 @@ const DM = () => {
               {playerViewDimensions.width && <PlayersView 
                 ref={playersViewRef}
                 selected={playerViewSelected}
-                x={0}
-                y={0}
+                x={playerViewDimensions.x}
+                y={playerViewDimensions.y}
                 width={playerViewDimensions.width}
                 height={playerViewDimensions.height}
                 onChange={(attrs) => {setPlayerViewDimensions(attrs);}} />}

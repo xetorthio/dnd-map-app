@@ -49,7 +49,13 @@ const Player = () => {
 
     useEffect(() => {
         sendPlayerViewChange();
-    }, [window.innerWidth, window.innerHeight, viewScale]);
+    }, [viewScale]);
+
+    useEffect(() => {
+        window.addEventListener("resize", () => {
+            sendPlayerViewChange();
+        });
+    }, []);
 
     useEffect(() => {
         if (readyState === ReadyState.OPEN) {
