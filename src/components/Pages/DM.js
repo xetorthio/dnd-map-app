@@ -6,6 +6,10 @@ import DMToolbox from '../Toolbox/DMToolbox';
 import PlayersView from '../Layers/PlayersView';
 import Effects from '../Layers/Effects';
 import useWebSocket from 'react-use-websocket';
+import PhotoLibraries from '../Layers/PhotoLibraries';
+import PhotoLibraryDialog from '../Toolbox/PhotoLibraryDialog';
+import { Stack } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
 
 const DM = () => {
   const { sendMessage, lastMessage, readyState } = useWebSocket('ws://localhost:3001', {
@@ -24,6 +28,7 @@ const DM = () => {
   const [dmViewScale, setDMViewScale] = useState(1);
   const [playerViewScale, setPlayerViewScale] = useState(1);
   const [effectsSelected, setEffectsSelected] = useState(false);
+  const [photoLibrariesSelected, setPhotoLibrariesSelected] = useState(false);
   const [selectedEffectColor, setSelectedEffectColor] = useState({
     r: '241',
     g: '112',
@@ -31,6 +36,9 @@ const DM = () => {
     a: '1',
   });
   const [playerViewDimensions, setPlayerViewDimensions] = useState({x: 0, y: 0});
+  const [photoLibraries, setPhotoLibraries] = useState([]);
+  const [photoLibraryDialogOpen, setPhotoLibraryDialogOpen] = useState(false);
+  const [selectedPhotoLibrary, setSelectedPhotoLibrary] = useState(null);
 
   const sendStateMessage = (type, msg) => {
     sendMessage(JSON.stringify({type: type, msg: msg}));
@@ -41,6 +49,7 @@ const DM = () => {
     setFogOfWarRevealSelected(false);
     setPlayerViewSelected(false);
     setEffectsSelected(false);
+    setPhotoLibrariesSelected(false);
   };
 
   const handlePlayerView = () => {
@@ -61,6 +70,11 @@ const DM = () => {
   const handleEffects = () => {
     toolChangeReset();
     setEffectsSelected(true);
+  };
+
+  const handlePhotoLibraries = () => {
+    toolChangeReset();
+    setPhotoLibrariesSelected(true);
   };
 
   const handleMapChange = (map) => {
@@ -101,7 +115,7 @@ const DM = () => {
 
   useEffect(() => {
     playerSendMapPosition();
-  }, [playerViewDimensions])
+  }, [playerViewDimensions]);
 
   const playerSendMap = () => {
     if (selectedMap) {
@@ -127,6 +141,14 @@ const DM = () => {
 
   const playerSendMapPosition = () => {
     sendStateMessage('mapPositionChange', {x: playerViewDimensions.x, y: playerViewDimensions.y});
+  };
+
+  const playerSendImageToShow = (image) => {
+    sendStateMessage('showImage', image)
+  };
+
+  const playerCloseImageToShow = () => {
+    sendStateMessage('closeImage', {})
   };
 
   const sendPlayerEverything = () => {
@@ -159,6 +181,7 @@ const DM = () => {
       playerViewScale,
       dmViewScale,
       effects,
+      photoLibraries
     };
   };
 
@@ -176,10 +199,48 @@ const DM = () => {
     handleEffectsChange(loadedState.effects);
     handleDMViewRescale(loadedState.dmViewScale);
     handlePlayerViewRescale(loadedState.playerViewScale);
+    handleLibraryChange(loadedState.photoLibraries);
+  };
+
+  const handleLibraryChange = (libraries) => {
+    setPhotoLibraries(libraries);
+  };
+
+  const handlePhotoLibraryOpen = (library) => {
+    setSelectedPhotoLibrary(library);
+    setPhotoLibraryDialogOpen(true);
+  };
+
+  const handlePhotoLibraryClose = () => {
+    setSelectedPhotoLibrary(null);
+    setPhotoLibraryDialogOpen(false);
+    playerCloseImageToShow();
+  };
+
+  const handlePhotoLibraryImageChange = (newimages) => {
+    const library = photoLibraries[selectedPhotoLibrary];
+    const newlibrary = {...library, images: newimages};
+    let newlibraries = [...photoLibraries];
+    newlibraries[selectedPhotoLibrary] = newlibrary;
+    setPhotoLibraries(newlibraries);
+  };
+
+  const handlePhotoLibraryImageShow = (imageToShow) => {
+    const library = photoLibraries[selectedPhotoLibrary];
+    const image = library.images[imageToShow];
+    playerSendImageToShow(image);
   };
 
   return (
     <Fragment>
+      <CssBaseline />
+      <PhotoLibraryDialog 
+        library={photoLibraries[selectedPhotoLibrary]}
+        open={photoLibraryDialogOpen}
+        onClose={handlePhotoLibraryClose}
+        onImageChange={handlePhotoLibraryImageChange}
+        onImageShow={handlePhotoLibraryImageShow}
+      />
       <DMToolbox
         handleMapChange={handleMapChange}
         handleMapMove={handleMapMove}
@@ -191,6 +252,7 @@ const DM = () => {
         handleEffectColorChange={handleEffectColorChange}
         getState={generateState}
         handleLoad={handleLoad}
+        handlePhotoLibraries={handlePhotoLibraries}
 
         mapMoveSelected={mapMoveSelected}
         fogOfWarRevealSelected={fogOfWarRevealSelected}
@@ -200,45 +262,55 @@ const DM = () => {
         effectsSelected={effectsSelected}
         selectedEffectColor={selectedEffectColor}
         connectionStatus={readyState}
+        photoLibrariesSelected={photoLibrariesSelected}
       />
-      <Stage
-        style={{ backgroundColor: "black" }}
-        width={window.innerWidth}
-        height={window.innerHeight}
-        tabIndex={0}
-        ref={stageRef}
-        draggable={mapMoveSelected}
-        scaleX={dmViewScale}
-        scaleY={dmViewScale}
-      >
-        {selectedMap && (
-          <Fragment>
-            <Map image={selectedMap} />
-            <FogOfWar 
-              revealEnabled={fogOfWarRevealSelected}
-              opacity={0.6}
-              height={selectedMapDimensions.height}
-              width={selectedMapDimensions.width}
-              reveals={fogOfWarReveals}
-              onRevealsChange={handleFogOfWarRevealsChange} />
-            <Effects
-              enabled={effectsSelected}
-              height={selectedMapDimensions.height}
-              width={selectedMapDimensions.width}
-              color={selectedEffectColor}
-              effects={effects}
-              onChange={handleEffectsChange} />
-            {playerViewDimensions.width && <PlayersView 
-              ref={playersViewRef}
-              selected={playerViewSelected}
-              x={0}
-              y={0}
-              width={playerViewDimensions.width}
-              height={playerViewDimensions.height}
-              onChange={(attrs) => {setPlayerViewDimensions(attrs);}} />}
-          </Fragment>
-        )}
-      </Stage>
+      <main>
+        <Stage
+          style={{ position: 'sticky', backgroundColor: "black" }}
+          width={window.innerWidth}
+          height={window.innerHeight}
+          tabIndex={0}
+          ref={stageRef}
+          draggable={mapMoveSelected}
+          scaleX={dmViewScale}
+          scaleY={dmViewScale}
+        >
+          {selectedMap && (
+            <Fragment>
+              <Map image={selectedMap} />
+              <FogOfWar 
+                revealEnabled={fogOfWarRevealSelected}
+                opacity={0.6}
+                height={selectedMapDimensions.height}
+                width={selectedMapDimensions.width}
+                reveals={fogOfWarReveals}
+                onRevealsChange={handleFogOfWarRevealsChange} />
+              <Effects
+                enabled={effectsSelected}
+                height={selectedMapDimensions.height}
+                width={selectedMapDimensions.width}
+                color={selectedEffectColor}
+                effects={effects}
+                onChange={handleEffectsChange} />
+              {playerViewDimensions.width && <PlayersView 
+                ref={playersViewRef}
+                selected={playerViewSelected}
+                x={0}
+                y={0}
+                width={playerViewDimensions.width}
+                height={playerViewDimensions.height}
+                onChange={(attrs) => {setPlayerViewDimensions(attrs);}} />}
+              {photoLibrariesSelected && <PhotoLibraries 
+                enabled={photoLibrariesSelected}
+                height={selectedMapDimensions.height}
+                width={selectedMapDimensions.width}              
+                libraries={photoLibraries}
+                onChange={handleLibraryChange}
+                onOpen={handlePhotoLibraryOpen} />}
+            </Fragment>
+          )}
+        </Stage>
+      </main>      
     </Fragment>
   );
 };

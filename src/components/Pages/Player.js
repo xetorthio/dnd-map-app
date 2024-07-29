@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { AppBar, Box } from '@mui/material';
+import { AppBar, Box, Dialog } from '@mui/material';
 import ConnectionStatus from "../Toolbox/ConnectionStatus";
 import { Stage } from 'react-konva';
 import Map from "../Layers/Map";
@@ -14,6 +14,7 @@ const Player = () => {
     const [effects, setEffects] = useState([]);
     const [viewScale, setViewScale] = useState(1);
     const [mapPosition, setMapPosition] = useState({x: 0, y:0});
+    const [imageToShow, setImageToShow] = useState(null);
     const stageRef = useRef();
 
     const { sendMessage, lastMessage, readyState } = useWebSocket('ws://localhost:3001', {
@@ -38,6 +39,10 @@ const Player = () => {
                 setEffects(msg.msg);
             } else if (msg.type == 'mapPositionChange') {
                 setMapPosition({x: msg.msg.x, y: msg.msg.y});
+            } else if (msg.type == 'showImage') {
+                setImageToShow(msg.msg);
+            } else if (msg.type == 'closeImage') {
+                setImageToShow(null);
             }
         }
     }, [lastMessage]);
@@ -80,6 +85,12 @@ const Player = () => {
                     <ConnectionStatus connectionStatus={readyState} />
                 </Box>
             </AppBar> : null }
+            <Dialog open={imageToShow !== null}>
+                <Box
+                    component="img"
+                    src={imageToShow}
+                    />
+            </Dialog>
             <Stage
                 style={{ backgroundColor: "black" }}
                 draggable={false}

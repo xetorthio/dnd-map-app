@@ -21,10 +21,10 @@ const FogOfWar = ({opacity, height, width, revealEnabled, reveals, onRevealsChan
 
     useEffect(() => {
         if (fog.current) {
-            const currentFog = fog.current;
-            currentFog.getStage().container().addEventListener('keypress', handleDeleteSelectedReveal);
+            const currentFog = fog.current.getStage().container();
+            currentFog.addEventListener('keypress', handleDeleteSelectedReveal);
             return () => {
-                currentFog.getStage().container().removeEventListener('keypress', handleDeleteSelectedReveal);
+                currentFog.removeEventListener('keypress', handleDeleteSelectedReveal);
             }
         }
     }, [selectedReveal]);

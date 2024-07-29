@@ -9,10 +9,10 @@ const Effects = ({enabled, width, height, color, effects, onChange}) => {
 
     useEffect(() => {
         if (effectsRef.current) {
-            const currentEffect = effectsRef.current;
-            currentEffect.getStage().container().addEventListener('keypress', handleDeleteSelectedEffect);
+            const currentEffect = effectsRef.current.getStage().container();
+            currentEffect.addEventListener('keypress', handleDeleteSelectedEffect);
             return () => {
-                currentEffect.getStage().container().removeEventListener('keypress', handleDeleteSelectedEffect);
+                currentEffect.removeEventListener('keypress', handleDeleteSelectedEffect);
             }
         }
     }, [selectedEffect]);

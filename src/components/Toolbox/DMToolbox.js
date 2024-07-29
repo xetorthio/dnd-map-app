@@ -10,6 +10,7 @@ import EffectColorPicker from "./EffectColorPicker";
 import ConnectionStatus from "./ConnectionStatus";
 import SaveButton from "./SaveButton";
 import LoadButton from "./LoadButton";
+import { PhotoLibrary } from "@mui/icons-material";
 
 const DMToolbox = ({
     handleMapChange,
@@ -20,6 +21,7 @@ const DMToolbox = ({
     handlePlayerViewRescale,
     handleEffects,
     handleEffectColorChange,
+    handlePhotoLibraries,
     getState,
     handleLoad,
 
@@ -29,6 +31,7 @@ const DMToolbox = ({
     dmViewScale,
     playerViewScale,
     effectsSelected,
+    photoLibrariesSelected,
     selectedEffectColor,
     connectionStatus
 }) => {
@@ -42,8 +45,10 @@ const DMToolbox = ({
             setSelectedTool('playerView');
         } else if (effectsSelected) {
             setSelectedTool('areaEffect');
+        } else if (photoLibrariesSelected) {
+            setSelectedTool('photoLibraries');
         }
-    }, [mapMoveSelected, fogOfWarRevealSelected, playerViewSelected])
+    }, [mapMoveSelected, fogOfWarRevealSelected, playerViewSelected, effectsSelected, photoLibrariesSelected])
 
     const dmViewScaleChangeHandler = (e) => {
         handleDMViewRescale(parseFloat(e.target.value));
@@ -54,7 +59,7 @@ const DMToolbox = ({
     };
 
     return (
-        <AppBar position="static" color="primary" sx={{ display: 'flex', gap: 2 }}>
+        <AppBar position="absolute" color="primary" sx={{ display: 'flex', gap: 2 }}>
             <Box position="static" sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <ConnectionStatus connectionStatus={connectionStatus} />
                 <ToggleButtonGroup orientation="horizontal" size="large" aria-label="Small sizes" sx={{ flexWrap: "wrap" }}>
@@ -72,6 +77,9 @@ const DMToolbox = ({
                     </ToggleButton>
                     <ToggleButton value="areaEffect" key="areaEffect" onClick={handleEffects}>
                         <FlareIcon />
+                    </ToggleButton>
+                    <ToggleButton value="photoLibraries" key="photoLibraries" onClick={handlePhotoLibraries}>
+                        <PhotoLibrary />
                     </ToggleButton>
                 </ToggleButtonGroup>
                 <EffectColorPicker color={selectedEffectColor} onColorChange={handleEffectColorChange} />
