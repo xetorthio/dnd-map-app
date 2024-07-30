@@ -80,7 +80,7 @@ We welcome contributions from the community! To get started:
 - [ ] **Add different types of area effects:** Implement effects like circles, cones, etc.
 - [ ] **Add animations to effects:** Include animations for effects like fire and thunder.
 - [x] ~**Add library of images:** Allow images to be placed contextually on the map.~
-- [ ] **Add DM map:** Provide a separate map for the DM with additional information.
+- [x] ~**Add DM map:** Provide a separate map for the DM with additional information.~
 - [x] ~**Reposition player view:** Center the view on the cursor for easier interaction.~
 - [ ] **Configure ports and server URL:** Allow customization of connection settings.
 - [ ] **Allow to resize player view by drawing a square:** We should be able to measure screen PPI and how many pixels are in a square in the image and resize it to be exactly 1 inch.
