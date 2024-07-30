@@ -11,9 +11,12 @@ import ConnectionStatus from "./ConnectionStatus";
 import SaveButton from "./SaveButton";
 import LoadButton from "./LoadButton";
 import { PhotoLibrary } from "@mui/icons-material";
+import MapIcon from '@mui/icons-material/Map';
+import PanoramaPhotosphereIcon from '@mui/icons-material/PanoramaPhotosphere';
 
 const DMToolbox = ({
-    handleMapChange,
+    handleDMMapChange,
+    handlePlayerMapChange,
     handleFogOfWarReveal,
     handlePlayerView,
     handleMapMove,
@@ -63,7 +66,8 @@ const DMToolbox = ({
             <Box position="fixed" sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <ConnectionStatus connectionStatus={connectionStatus} />
                 <ToggleButtonGroup orientation="horizontal" size="large" aria-label="Small sizes" sx={{ flexWrap: "wrap" }}>
-                    <MapSelector onMapChange={handleMapChange} />
+                    <MapSelector icon={<MapIcon />}onMapChange={handleDMMapChange} />
+                    <MapSelector icon={<PanoramaPhotosphereIcon />} onMapChange={handlePlayerMapChange} />
                 </ToggleButtonGroup>
                 <ToggleButtonGroup value={selectedTool} orientation="horizontal" size="large" aria-label="Small sizes" sx={{ flexWrap: "wrap" }}>
                     <ToggleButton value="mapMove" key="mapMove" onClick={handleMapMove}>

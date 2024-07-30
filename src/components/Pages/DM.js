@@ -16,7 +16,8 @@ const DM = () => {
     shouldReconnect: (closeEvent) => true
   });
 
-  const [selectedMap, setSelectedMap] = useState(null);
+  const [selectedDMMap, setSelectedDMMap] = useState(null);
+  const [selectedPlayerMap, setSelectedPlayerMap] = useState(null);
   const [selectedMapDimensions, setSelectedMapDimensions] = useState({ width: 0, height: 0 });
   const stageRef = useRef();
   const playersViewRef = useRef();
@@ -80,11 +81,19 @@ const DM = () => {
     setPhotoLibrariesSelected(true);
   };
 
-  const handleMapChange = (map) => {
+  const handleDMMapChange = (map) => {
     const img = new window.Image();
     img.src = map;
     img.onload = () => {
-        setSelectedMap(img);
+        setSelectedDMMap(img);
+    };
+  };
+
+  const handlePlayerMapChange = (map) => {
+    const img = new window.Image();
+    img.src = map;
+    img.onload = () => {
+        setSelectedPlayerMap(img);
     };
   };
 
@@ -101,8 +110,16 @@ const DM = () => {
   }
 
   useEffect(() => {
+    if (selectedDMMap) {
+      setSelectedMapDimensions({
+        width: selectedDMMap.width,
+        height: selectedDMMap.height,
+      });
+    }
+  }, [selectedDMMap])
+  useEffect(() => {
     playerSendMap();
-  }, [selectedMap]);
+  }, [selectedPlayerMap]);
 
   useEffect(() => {
     playerSendReveals();
@@ -121,12 +138,8 @@ const DM = () => {
   }, [playerViewDimensions]);
 
   const playerSendMap = () => {
-    if (selectedMap) {
-      setSelectedMapDimensions({
-        width: selectedMap.width,
-        height: selectedMap.height,
-      });
-      sendStateMessage('mapChange', selectedMap.src);
+    if (selectedPlayerMap) {
+      sendStateMessage('mapChange', selectedPlayerMap.src);
     }
   };
 
@@ -175,10 +188,17 @@ const DM = () => {
 
   const generateState = () => {
     return {
-      map: {
-        src: selectedMap.src,
-        width: selectedMap.width,
-        height: selectedMap.height
+      maps: {
+        dm: {
+          src: selectedDMMap.src,
+          width: selectedDMMap.width,
+          height: selectedDMMap.height
+        },
+        player: {
+          src: selectedPlayerMap.src,
+          width: selectedPlayerMap.width,
+          height: selectedPlayerMap.height
+        }
       },
       fogOfWarReveals: fogOfWarReveals,
       playerViewScale,
@@ -197,7 +217,8 @@ const DM = () => {
   };
 
   const handleLoad = (loadedState) => {
-    handleMapChange(loadedState.map.src);
+    handleDMMapChange(loadedState.maps.dm.src);
+    handlePlayerMapChange(loadedState.maps.player.src);
     handleFogOfWarRevealsChange(loadedState.fogOfWarReveals);
     handleEffectsChange(loadedState.effects);
     handleDMViewRescale(loadedState.dmViewScale);
@@ -265,7 +286,8 @@ const DM = () => {
         onImageShow={handlePhotoLibraryImageShow}
       />
       <DMToolbox
-        handleMapChange={handleMapChange}
+        handleDMMapChange={handleDMMapChange}
+        handlePlayerMapChange={handlePlayerMapChange}
         handleMapMove={handleMapMove}
         handleFogOfWarReveal={handleFogOfWarReveal}
         handlePlayerView={handlePlayerView}
@@ -298,9 +320,9 @@ const DM = () => {
           scaleX={dmViewScale}
           scaleY={dmViewScale}
         >
-          {selectedMap && (
+          {selectedDMMap && (
             <Fragment>
-              <Map image={selectedMap} />
+              <Map image={selectedDMMap} />
               <FogOfWar 
                 revealEnabled={fogOfWarRevealSelected}
                 opacity={0.6}

@@ -1,10 +1,9 @@
 import React, { Fragment, useRef } from "react";
 import { useState } from "react";
-import MapIcon from '@mui/icons-material/Map';
 
 import { Input, ToggleButton } from '@mui/material';
 
-const MapSelector = ({onMapChange}) => {
+const MapSelector = ({icon, onMapChange}) => {
     const fileUploadRef = useRef();
 
     const handleClick = () => {
@@ -25,7 +24,7 @@ const MapSelector = ({onMapChange}) => {
 
     return (
         <ToggleButton value="changeMap" key="changeMap" onClick={handleClick}>
-            <MapIcon />
+            {icon}
             <input ref={fileUploadRef} hidden={true} type="file" onChange={handleFileChange} />
         </ToggleButton>
     );
