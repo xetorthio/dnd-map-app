@@ -13,6 +13,7 @@ import LoadButton from "./LoadButton";
 import { PhotoLibrary } from "@mui/icons-material";
 import MapIcon from '@mui/icons-material/Map';
 import PanoramaPhotosphereIcon from '@mui/icons-material/PanoramaPhotosphere';
+import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 
 const DMToolbox = ({
     handleDMMapChange,
@@ -27,6 +28,7 @@ const DMToolbox = ({
     handlePhotoLibraries,
     getState,
     handleLoad,
+    handleBattleTracker,
 
     mapMoveSelected,
     fogOfWarRevealSelected,
@@ -39,6 +41,7 @@ const DMToolbox = ({
     connectionStatus
 }) => {
     const [selectedTool, setSelectedTool] = useState();
+
     useEffect(() => {
         if (mapMoveSelected) {
             setSelectedTool('mapMove');
@@ -69,6 +72,9 @@ const DMToolbox = ({
                     <MapSelector icon={<MapIcon />}onMapChange={handleDMMapChange} />
                     <MapSelector icon={<PanoramaPhotosphereIcon />} onMapChange={handlePlayerMapChange} />
                 </ToggleButtonGroup>
+                <Button variant="outlined" onClick={handleBattleTracker} aria-label="Show battle tracker" sx={{ flexWrap: "wrap" }}>
+                    <SportsKabaddiIcon />
+                </Button>
                 <ToggleButtonGroup value={selectedTool} orientation="horizontal" size="large" aria-label="Small sizes" sx={{ flexWrap: "wrap" }}>
                     <ToggleButton value="mapMove" key="mapMove" onClick={handleMapMove}>
                         <ControlCameraIcon />

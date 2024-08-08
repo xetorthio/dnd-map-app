@@ -6,6 +6,7 @@ import { Stage } from 'react-konva';
 import Map from "../Layers/Map";
 import FogOfWar from "../Layers/FogOfWar";
 import Effects from "../Layers/Effects";
+import BattleTrackerViewer from "../Toolbox/BattleTrackerViewer";
 
 const Player = () => {
     const [selectedMap, setSelectedMap] = useState(null);
@@ -16,6 +17,8 @@ const Player = () => {
     const [mapPosition, setMapPosition] = useState({x: 0, y:0});
     const [imageToShow, setImageToShow] = useState(null);
     const stageRef = useRef();
+    const [showBattleTracker, setShowBattleTracker] = useState(false);
+    const [encounter, setEncounter] = useState(null);
 
     const { sendMessage, lastMessage, readyState } = useWebSocket('ws://localhost:3001', {
         shouldReconnect: (closeEvent) => true
@@ -43,6 +46,10 @@ const Player = () => {
                 setImageToShow(msg.msg);
             } else if (msg.type == 'closeImage') {
                 setImageToShow(null);
+            } else if (msg.type == 'toggleBattleTracker') {
+                setShowBattleTracker(msg.msg);
+            } else if (msg.type == 'encounterUpdate') {
+                setEncounter(msg.msg);
             }
         }
     }, [lastMessage]);
@@ -97,6 +104,7 @@ const Player = () => {
                     src={imageToShow}
                     />
             </Dialog>
+            <BattleTrackerViewer open={showBattleTracker} encounter={encounter} />
             <Stage
                 style={{ backgroundColor: "black" }}
                 draggable={false}

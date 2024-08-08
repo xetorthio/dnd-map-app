@@ -8,8 +8,8 @@ import Effects from '../Layers/Effects';
 import useWebSocket from 'react-use-websocket';
 import PhotoLibraries from '../Layers/PhotoLibraries';
 import PhotoLibraryDialog from '../Toolbox/PhotoLibraryDialog';
-import { Stack } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
+import BattleTracker from '../Toolbox/BattleTracker';
 
 const DM = () => {
   const { sendMessage, lastMessage, readyState } = useWebSocket('ws://localhost:3001', {
@@ -41,6 +41,8 @@ const DM = () => {
   const [photoLibraryDialogOpen, setPhotoLibraryDialogOpen] = useState(false);
   const [selectedPhotoLibrary, setSelectedPhotoLibrary] = useState(null);
   const playerViewDimensionsRef = useRef();
+  const [showBattleTracker, setShowBattleTracker] = useState(false);
+  const [battleTrackerPosition, setBattleTrackerPosition] = useState({x: 10, y:10});
 
   playerViewDimensionsRef.current = playerViewDimensions;
 
@@ -160,11 +162,19 @@ const DM = () => {
   };
 
   const playerSendImageToShow = (image) => {
-    sendStateMessage('showImage', image)
+    sendStateMessage('showImage', image);
   };
 
   const playerCloseImageToShow = () => {
-    sendStateMessage('closeImage', {})
+    sendStateMessage('closeImage', {});
+  };
+
+  const playerToggleBattleTracker = (toggle) => {
+    sendStateMessage('toggleBattleTracker', toggle);
+  };
+
+  const playerEncounterUpdate = (encounter) => {
+    sendStateMessage('encounterUpdate', encounter);
   };
 
   const sendPlayerEverything = () => {
@@ -275,6 +285,18 @@ const DM = () => {
     }
   }, [stageRef.current]);
 
+  useEffect(() => {
+    playerToggleBattleTracker(showBattleTracker);
+  }, [showBattleTracker]);
+
+  const handleBattleTracker = () => {
+    setShowBattleTracker(true);
+  };
+
+  const handleEncounterChange = (encounter) => {
+    playerEncounterUpdate(encounter);
+  };
+
   return (
     <Fragment>
       <CssBaseline />
@@ -285,6 +307,7 @@ const DM = () => {
         onImageChange={handlePhotoLibraryImageChange}
         onImageShow={handlePhotoLibraryImageShow}
       />
+      <BattleTracker open={showBattleTracker} onClose={() => {setShowBattleTracker(false);}} onChange={handleEncounterChange} />
       <DMToolbox
         handleDMMapChange={handleDMMapChange}
         handlePlayerMapChange={handlePlayerMapChange}
@@ -298,6 +321,7 @@ const DM = () => {
         getState={generateState}
         handleLoad={handleLoad}
         handlePhotoLibraries={handlePhotoLibraries}
+        handleBattleTracker={handleBattleTracker}
 
         mapMoveSelected={mapMoveSelected}
         fogOfWarRevealSelected={fogOfWarRevealSelected}
