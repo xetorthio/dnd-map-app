@@ -10,14 +10,22 @@ import TableRow from '@mui/material/TableRow';
 const BattleTrackerViewer = ({ open, encounter }) => {
     if (!open) return null;
 
+    let props = {top: '0', left: '0'};
+    if (encounter.position == 1) {
+      props = {top: '0', right: '0'};
+    } else if (encounter.position == 2) {
+      props = {bottom: '0', right: '0'};
+    } else if (encounter.position == 3) {
+      props = {bottom: '0', left: '0'};
+    }
+
     return (
         <Paper
           elevation={3}
           style={{
-            position: 'absolute',
-            top: '0%',
-            left: '0%',
-            width: '300px',
+            position: 'fixed',
+            ...props,
+            width: '10%',
             padding: '16px',
             zIndex: 1300, // Ensure it's above other content
           }}
@@ -36,9 +44,9 @@ const BattleTrackerViewer = ({ open, encounter }) => {
                                 key={character.name}
                                 style={{backgroundColor: i == encounter.turn ? 'rgba(254, 241, 96,0.3)' : character.enemy ? 'rgba(255,0,0,0.3)' : ''}}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell align="left">{character.initiative}</TableCell>
+                                    <TableCell align="left"><Typography variant="body1">{character.initiative}</Typography></TableCell>
                                     <TableCell align="left" component="th" scope="row">
-                                        {character.name}
+                                      <Typography variant="body1">{character.name}</Typography>
                                     </TableCell>
                                 </TableRow>
                             ))}

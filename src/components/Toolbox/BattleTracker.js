@@ -6,8 +6,8 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import ControlCameraIcon from '@mui/icons-material/ControlCamera';
 
 const BattleTracker = ({ open, onClose, onChange }) => {
     const [newEncounter, setNewEncounter] = useState(false);
@@ -21,7 +21,7 @@ const BattleTracker = ({ open, onClose, onChange }) => {
             return {name: data[0], enemy: data[1] == 'TRUE'? true : false, initiative: data[2]};
         });
 
-        const newencounter = {rounds: 1, characters: characters, turn: 0};
+        const newencounter = {rounds: 1, characters: characters, turn: 0, position: 0};
         setEncounter(newencounter);
         const nextTurn = 0;
     };
@@ -42,6 +42,10 @@ const BattleTracker = ({ open, onClose, onChange }) => {
         setEncounter(newencounter);
     };
 
+    const handlePositionChange = () => {
+        setEncounter({...encounter, position: (encounter.position+1) % 4});
+    };
+
     useEffect(() => {
         onChange(encounter);
     }, [encounter]);
@@ -54,9 +58,9 @@ const BattleTracker = ({ open, onClose, onChange }) => {
           elevation={3}
           style={{
             position: 'absolute',
-            top: '20%',
-            left: '20%',
-            width: '300px',
+            top: '0%',
+            left: '80%',
+            width: '15%',
             padding: '16px',
             cursor: 'move',
             zIndex: 1300, // Ensure it's above other content
@@ -74,6 +78,7 @@ const BattleTracker = ({ open, onClose, onChange }) => {
                 <Fragment>
                     <Button variant='outlined' onClick={() => {setNewEncounter(true)}}>New encounter</Button>
                     <Button variant='outlined' color='error' onClick={handleNextTurn}>Next</Button>
+                    <IconButton onClick={handlePositionChange}><ControlCameraIcon /></IconButton>
                 </Fragment>}
           
           {encounter && 

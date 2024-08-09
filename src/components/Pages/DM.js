@@ -42,7 +42,7 @@ const DM = () => {
   const [selectedPhotoLibrary, setSelectedPhotoLibrary] = useState(null);
   const playerViewDimensionsRef = useRef();
   const [showBattleTracker, setShowBattleTracker] = useState(false);
-  const [battleTrackerPosition, setBattleTrackerPosition] = useState({x: 10, y:10});
+  const [currentEncounter, setCurrentEncounter] = useState(null);
 
   playerViewDimensionsRef.current = playerViewDimensions;
 
@@ -183,6 +183,8 @@ const DM = () => {
     playerSendScale();
     playerSendEffects();
     playerSendMapPosition();
+    playerToggleBattleTracker(showBattleTracker);
+    playerEncounterUpdate(currentEncounter);
   };
 
   useEffect(() => {
@@ -294,6 +296,7 @@ const DM = () => {
   };
 
   const handleEncounterChange = (encounter) => {
+    setCurrentEncounter(encounter);
     playerEncounterUpdate(encounter);
   };
 
