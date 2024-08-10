@@ -1,5 +1,5 @@
 import Draggable from 'react-draggable';
-import { Paper, Box, Typography, IconButton, TextField, Button } from '@mui/material';
+import { Paper, Box, Typography, IconButton, TextField, Button, ToggleButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Fragment, useEffect, useState } from 'react';
 import Table from '@mui/material/Table';
@@ -18,7 +18,7 @@ const BattleTracker = ({ open, onClose, onChange }) => {
         const rawCharacters = e.target.value.split('\n');
         let characters = rawCharacters.map((character) => {
             const data = character.split('\t');
-            return {name: data[0], enemy: data[1] == 'TRUE'? true : false, initiative: data[2]};
+            return {name: data[0], usedReaction: false, enemy: data[1] == 'TRUE'? true : false, initiative: data[2]};
         });
 
         const newencounter = {rounds: 1, characters: characters, turn: 0, position: 0};
@@ -35,7 +35,9 @@ const BattleTracker = ({ open, onClose, onChange }) => {
 
     const handleNextTurn = () => {
         const nextTurn = (encounter.turn + 1) % encounter.characters.length;
-        const newencounter = {...encounter, turn: nextTurn};
+        const newcharacters = [...encounter.characters];
+        newcharacters[nextTurn] = {...encounter.characters[nextTurn], usedReaction: false};
+        const newencounter = {...encounter, turn: nextTurn, characters: newcharacters};
         if (nextTurn == 0) {
             newencounter.rounds++;
         }
@@ -46,7 +48,14 @@ const BattleTracker = ({ open, onClose, onChange }) => {
         setEncounter({...encounter, position: (encounter.position+1) % 4});
     };
 
+    const characterUsedReaction = (i, reacted) => {
+        const newcharacters = [...encounter.characters];
+        newcharacters[i] = {...newcharacters[i], usedReaction: reacted};
+        setEncounter({...encounter, characters: newcharacters});
+    };
+
     useEffect(() => {
+        console.log(encounter);
         onChange(encounter);
     }, [encounter]);
 
@@ -57,10 +66,10 @@ const BattleTracker = ({ open, onClose, onChange }) => {
         <Paper
           elevation={3}
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: '0%',
-            left: '80%',
-            width: '15%',
+            right: '2%',
+            width: '20%',
             padding: '16px',
             cursor: 'move',
             zIndex: 1300, // Ensure it's above other content
@@ -95,6 +104,9 @@ const BattleTracker = ({ open, onClose, onChange }) => {
                                     <TableCell align="left">{character.initiative}</TableCell>
                                     <TableCell align="left" component="th" scope="row">
                                         {character.name}
+                                    </TableCell>
+                                    <TableCell align="left" component="th" scope="row">
+                                        <ToggleButton size='small' selected={character.usedReaction} onChange={() => {characterUsedReaction(i, !character.usedReaction)}}>R</ToggleButton>
                                     </TableCell>
                                     <TableCell align="left" component="th" scope="row">
                                         {character.enemy ? <IconButton size="small" onClick={() => {handleCharacterRemove(i);}}><CloseIcon /></IconButton> : null}

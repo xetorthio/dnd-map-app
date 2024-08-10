@@ -19,13 +19,15 @@ const BattleTrackerViewer = ({ open, encounter }) => {
       props = {bottom: '0', left: '0'};
     }
 
+    console.log(encounter)
+
     return (
         <Paper
           elevation={3}
           style={{
             position: 'fixed',
             ...props,
-            width: '10%',
+            width: '15%',
             padding: '16px',
             zIndex: 1300, // Ensure it's above other content
           }}
@@ -47,6 +49,9 @@ const BattleTrackerViewer = ({ open, encounter }) => {
                                     <TableCell align="left"><Typography variant="body1">{character.initiative}</Typography></TableCell>
                                     <TableCell align="left" component="th" scope="row">
                                       <Typography variant="body1">{character.name}</Typography>
+                                    </TableCell>
+                                    <TableCell align="left" component="th" scope="row">
+                                      <Typography variant="body1">{character.usedReaction ? 'R' : ''}</Typography>
                                     </TableCell>
                                 </TableRow>
                             ))}
