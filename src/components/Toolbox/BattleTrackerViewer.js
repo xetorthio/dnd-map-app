@@ -1,10 +1,9 @@
-import { Paper, Box, Typography } from '@mui/material';
+import { Paper, Box, Typography, Chip } from '@mui/material';
 import { Fragment } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 const BattleTrackerViewer = ({ open, encounter }) => {
@@ -51,7 +50,7 @@ const BattleTrackerViewer = ({ open, encounter }) => {
                                       <Typography variant="body1">{character.name}</Typography>
                                     </TableCell>
                                     <TableCell align="left" component="th" scope="row">
-                                      <Typography variant="body1">{character.usedReaction ? 'R' : ''}</Typography>
+                                      {character.usedReaction ? <Chip size='small' label="R" color="primary" /> : null}
                                     </TableCell>
                                 </TableRow>
                             ))}
