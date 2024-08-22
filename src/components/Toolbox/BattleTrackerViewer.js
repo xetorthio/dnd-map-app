@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 
 const BattleTrackerViewer = ({ open, encounter }) => {
     if (!open) return null;
+    if (!encounter) return null;
 
     let props = {top: '0', left: '0'};
     if (encounter.position == 1) {
@@ -18,15 +19,13 @@ const BattleTrackerViewer = ({ open, encounter }) => {
       props = {bottom: '0', left: '0'};
     }
 
-    console.log(encounter)
-
     return (
         <Paper
           elevation={3}
           style={{
             position: 'fixed',
             ...props,
-            width: '15%',
+            width: '25%',
             padding: '16px',
             zIndex: 1300, // Ensure it's above other content
           }}
